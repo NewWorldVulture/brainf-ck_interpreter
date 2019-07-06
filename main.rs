@@ -8,7 +8,7 @@ use std::num::Wrapping;
 enum Tokens {
     MovRight,
     MovLeft,
-    Ddd,
+    Add,
     Sub,
     Output,
     Input,
