@@ -1,20 +1,23 @@
 use std::fs::File;
 use std::io::prelude::*;
 use std::env;
-// We want each memory position to wrap around
 use std::num::Wrapping;
 
-#[derive(Debug)]
-enum Tokens {
-    MovRight,
-    MovLeft,
-    Add,
-    Sub,
-    Output,
-    Input,
-    LeftBracket,
-    RightBracket,
-    Ignore,
+fn tokenize_char(x:char) -> &'str {
+    match x {
+        '>' => "mv rit",
+        '<' => "mv let",
+
+        '+' => "op add",
+        '-' => "op sub",
+
+        ',' => "io get",
+        '.' => "io put",
+
+        '[' => "lp str",
+        ']' => "lp end",
+        _ => (),
+    }
 }
 
 
