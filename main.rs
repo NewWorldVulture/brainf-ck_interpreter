@@ -3,7 +3,7 @@ use std::io::prelude::*;
 use std::env;
 use std::num::Wrapping;
 
-fn tokenize_char(x:char) -> &'str {
+fn tokenize_char(x:&char) -> &str {
     match x {
         '>' => "mv rit",
         '<' => "mv let",
@@ -16,7 +16,7 @@ fn tokenize_char(x:char) -> &'str {
 
         '[' => "lp str",
         ']' => "lp end",
-        _ => (),
+        _ => "",
     }
 }
 
@@ -24,10 +24,10 @@ fn tokenize_char(x:char) -> &'str {
 fn main() -> std::io::Result<()> {
     // Read filename from CLI
     let args:Vec<String> = env::args().collect();
-    let FILENAME = &args[1];
+    let filename = &args[1];
 
     // Attempt to open and read the contents of the file
-    let mut file = File::open(FILENAME)?;
+    let mut file = File::open(filename)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
