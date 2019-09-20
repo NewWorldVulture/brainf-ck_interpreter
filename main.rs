@@ -2,37 +2,32 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::{ env, mem };
 
-pub mod tape;
+mod tape;
 use tape::State;
 
-pub mod mv;
-pub mod op;
-pub mod io;
-pub mod lp;
-
-fn parse_char(instruction:&char, state:&State) -> State {
+fn parse_char<'a>(instruction:&char, state:&'a State) -> &'a State {
     match instruction {
-        '>' => { mv::rit(&mut state);
-            *state },
-        '<' => { mv::lft(&mut state);
-            *state },
+        '>' => { state.rit();
+            state },
+        '<' => { state.lft();
+            state },
 
-        '+' => { //op::add();
-            *state },
-        '-' => { //op::sub{};
-            *state },
+        '+' => { state.add();
+            state },
+        '-' => { state.sub();
+            state },
 
-        ',' => { //io::get();   // Accept input
-            *state },
-        '.' => { io::prt(&mut state);   // Outputs character
-            *state },
+        ',' => { //state.get();   // Accept input
+            state },
+        '.' => { state.prt();
+            state },
 
-        '[' => { //lp::str();
-            *state },
-        ']' => { //lp::end();
-            *state },
+        '[' => { //state.str();
+            state },
+        ']' => { //state.end();
+            state },
 
-        _ => *state,    // Skip anything that isn't a recognized instruction
+        _ => state,    // Skip anything that isn't a recognized instruction
     }
 }
 
@@ -51,7 +46,7 @@ fn main() -> std::io::Result<()> {
     let program: Vec<char> = f_contents.chars().collect();
     mem::forget(f_contents);
 
-    let mut state = State {
+    let mut state = tape::State {
         tape: [0].to_vec(),
         ptr: 0u32,
     };
