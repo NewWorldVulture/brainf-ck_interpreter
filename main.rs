@@ -1,57 +1,51 @@
-use std::fs::File;
-use std::io::prelude::*;
-use std::{ env, mem };
-
-mod tape;
-use tape::State;
-
-fn parse_char(instruction:&char, state:&mut State) {
-    match instruction {
-        '>' => { state.rit(); },
-        '<' => { state.lft(); },
-
-        '+' => { state.add(); },
-        '-' => { state.sub(); },
-
-        ',' => { state.get(); },
-        '.' => { state.prt(); },
-
-        '[' => { state.srt(); },
-        ']' => { state.end(); },
-
-        _ => {},    // Skip anything that isn't a recognized instruction
-    }
+pub struct State {
+    pub tape: Vec<u8>,
+    pub ptr: u32,
 }
 
-
-fn main() -> std::io::Result<()> {
-    // Read filename from CLI
-    let args:Vec<String> = env::args().collect();
-    let filename = &args[1];
-    //let input = &args[2];
-
-    // Attempt to open and read the contents of the file
-    let mut file = File::open(filename)?;
-    let mut f_contents = String::new();
-    file.read_to_string(&mut f_contents)?;
-    // Cast `contents` to a vec, then forget the String
-    let program: Vec<char> = f_contents.chars().collect();
-    mem::forget(f_contents);
-
-    let mut state = tape::State {
-        tape: [0].to_vec(),
-        ptr: 0u32,
-    };
-    let mut program_ptr:u32 = 0;
-
-    // Iterate over characters in program
-    while (program_ptr as usize) < program.len() {
-        let instruction = &program[state.ptr as usize];
-        parse_char(&instruction, &mut state);
-        //println!("{} : {}", ptr, x);
-        program_ptr += 1;
-        //println!("{:?} {:?}", state.tape, state.ptr);
+impl State {
+    pub fn add(&mut self) {
+        let ptr_val:u32 = self.ptr;
+        self.tape[ptr_val as usize].wrapping_add(1u8);
     }
 
-    Ok(())
+    pub fn sub(&mut self) {
+        let ptr_val:u32 = self.ptr;
+        self.tape[ptr_val as usize].wrapping_add(254u8);
+    }
+
+    pub fn rit(&mut self) {
+        self.ptr += 1;
+        // Check if ptr goes above highest cell
+        // If so, add another cell onto the tape
+        if (self.ptr as usize) >= self.tape.len() {
+            self.tape.push(0);
+        };
+    }
+
+    pub fn lft(&mut self) {
+        self.ptr -= 1;
+        // Check if ptr drops below 0. If so, panic
+        if self.ptr < 0 {
+            println!("Pointer head dropped below lowest cell.");
+            // TODO: Panic.
+            self.ptr +=1;
+        };
+    }
+    
+    pub fn get(&mut self) {
+        println!("[get_called]");
+    }
+
+    pub fn prt(&mut self) {
+        println!("{}", self.tape[self.ptr as usize] as char);
+    }
+    
+    pub fn srt(&mut self) {
+        println!("[loop_end]");
+    }
+    
+    pub fn end(&mut self) {
+        println!("[loop_end]");
+    }
 }
