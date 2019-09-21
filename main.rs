@@ -5,29 +5,21 @@ use std::{ env, mem };
 mod tape;
 use tape::State;
 
-fn parse_char<'a>(instruction:&char, state:&'a State) -> &'a State {
+fn parse_char(instruction:&char, state:&mut State) {
     match instruction {
-        '>' => { state.rit();
-            state },
-        '<' => { state.lft();
-            state },
+        '>' => { state.rit(); },
+        '<' => { state.lft(); },
 
-        '+' => { state.add();
-            state },
-        '-' => { state.sub();
-            state },
+        '+' => { state.add(); },
+        '-' => { state.sub(); },
 
-        ',' => { //state.get();   // Accept input
-            state },
-        '.' => { state.prt();
-            state },
+        ',' => { state.get(); },
+        '.' => { state.prt(); },
 
-        '[' => { //state.str();
-            state },
-        ']' => { //state.end();
-            state },
+        '[' => { state.str(); },
+        ']' => { state.end(); },
 
-        _ => state,    // Skip anything that isn't a recognized instruction
+        _ => {},    // Skip anything that isn't a recognized instruction
     }
 }
 
@@ -54,7 +46,7 @@ fn main() -> std::io::Result<()> {
     // Iterate over characters in program
     while (state.ptr as usize) < program.len() {
         let instruction = &program[state.ptr as usize];
-        state = parse_char(&instruction, &mut state);
+        parse_char(&instruction, &mut state);
         //println!("{} : {}", ptr, x);
         state.ptr += 1;
     }
