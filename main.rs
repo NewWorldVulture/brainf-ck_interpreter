@@ -16,7 +16,7 @@ fn parse_char(instruction:&char, state:&mut State) {
         ',' => { state.get(); },
         '.' => { state.prt(); },
 
-        '[' => { state.str(); },
+        '[' => { state.srt(); },
         ']' => { state.end(); },
 
         _ => {},    // Skip anything that isn't a recognized instruction
@@ -42,13 +42,15 @@ fn main() -> std::io::Result<()> {
         tape: [0].to_vec(),
         ptr: 0u32,
     };
+    let mut program_ptr:u32 = 0;
 
     // Iterate over characters in program
-    while (state.ptr as usize) < program.len() {
+    while (program_ptr as usize) < program.len() {
         let instruction = &program[state.ptr as usize];
         parse_char(&instruction, &mut state);
         //println!("{} : {}", ptr, x);
-        state.ptr += 1;
+        program_ptr += 1;
+        //println!("{:?} {:?}", state.tape, state.ptr);
     }
 
     Ok(())
