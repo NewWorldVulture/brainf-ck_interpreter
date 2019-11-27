@@ -13,6 +13,9 @@ use prog::Program;
 // Main program runner. Treats loops and the main program the same way
 pub fn run_program(program:&mut Program, state:&mut State, is_main:bool) -> Result< (), &'static str > {
     while (program.ptr as usize) < program.txt.len() {
+        println!("=Running program...= {}", &program.txt[program.ptr as usize]);
+        println!("{:?}", state.tape);
+        println!("{:?}", program.txt);
         let result = parse_char(program, state, is_main);
 
         let result = match result {
@@ -30,6 +33,7 @@ pub fn run_program(program:&mut Program, state:&mut State, is_main:bool) -> Resu
     Ok(())
 }
 
+
 pub fn call_loop(program:&mut Program, state:&mut State, is_main:bool) -> Result< (), &'static str > {
     // Find length and contents of the loop
     let mut loop_length: usize = 0;
@@ -39,7 +43,9 @@ pub fn call_loop(program:&mut Program, state:&mut State, is_main:bool) -> Result
         match chr {
             '[' => { depth += 1; },
             ']' => { depth -= 1;
-                     if depth == 0 { break }
+                     if depth == 0 {
+                         break
+                     };
                    },
              _ => { },
         };
@@ -47,7 +53,7 @@ pub fn call_loop(program:&mut Program, state:&mut State, is_main:bool) -> Result
 
     // Set up new program for inner loop
     let mut loop_txt = prog::Program {
-        txt: program.txt[program.ptr as usize +1 .. program.ptr as usize +loop_length].to_vec(),
+        txt: program.txt[program.ptr as usize +1 .. program.ptr as usize + loop_length].to_vec(),
         ptr: 0,
         inpt: program.inpt.clone().to_string()
     };
@@ -58,6 +64,7 @@ pub fn call_loop(program:&mut Program, state:&mut State, is_main:bool) -> Result
     run_program(&mut loop_txt, state, false);
     return Ok(())
 }
+
 
 pub fn parse_char(program:&mut Program, state:&mut State, is_main:bool) -> Result< (), &'static str > {
     let instruction = &program.txt[program.ptr as usize];
@@ -82,19 +89,26 @@ pub fn parse_char(program:&mut Program, state:&mut State, is_main:bool) -> Resul
 fn main() -> std::io::Result<()> {
     // Read filename from CLI
     let args:Vec<String> = env::args().collect();
-    let filename = &args[1];
-    let input: &str = &args[2]; // program input
+    let mut filename = "";
+    let mut inpt = "";
+    match args.len() {
+        1 => { println!("Must include filename"); },
+        2 => { filename = &args[1];},
+        3 => { filename = &args[1];
+               inpt = &args[2]; },
+        _ => { println!("Must put user input in parentheses."); }
+    }
 
     // Attempt to open and read the contents of the file
     let mut file = File::open(filename)?;
     let mut f_contents = String::new();
     file.read_to_string(&mut f_contents)?;
+
     // Cast `contents` to a Program, then forget the String
-    // let program: Vec<char> = f_contents.chars().collect();
     let mut program = prog::Program {
         txt: f_contents.chars().collect(),
         ptr: 0,
-        inpt: input.to_string(),
+        inpt: inpt.to_string(),
     };
     mem::forget(f_contents);
 

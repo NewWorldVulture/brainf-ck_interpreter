@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct State {
     pub tape: Vec<u8>,
     pub ptr: i64,
@@ -6,25 +7,26 @@ pub struct State {
 impl State {
     // Add one to the current cell. Should not error.
     pub fn add(&mut self) -> Result< (), &'static str > {
-        let ptr_val = self.ptr;
-        self.tape[ptr_val as usize].wrapping_add(1u8);
+        println!("Adding one.");
+        self.tape[self.ptr as usize] = self.tape[self.ptr as usize].wrapping_add(1);
         Ok(())
     }
 
     // Subtract one from the current cell. Should not error.
     pub fn sub(&mut self) -> Result< (), &'static str > {
-        let ptr_val = self.ptr;
-        self.tape[ptr_val as usize].wrapping_add(255u8); // adding 255 == adding -1
+        self.tape[self.ptr as usize] = self.tape[self.ptr as usize].wrapping_add(255); // adding 255 == adding -1
         Ok(())
     }
 
     // Move the pointer to the right
     pub fn rit(&mut self) -> Result< (), &'static str > {
-        self.ptr += 1;
+        self.ptr = 1;
         // Check if ptr goes above highest cell
         // If so, add another cell onto the tape
-        if (self.ptr as usize) >= self.tape.len() {
+        if (self.ptr as usize) > self.tape.len()-1 {
             self.tape.push(0);
+            println!("adding one to tape");
+            println!("{:?}", self.tape);
         };
         Ok(())
     }

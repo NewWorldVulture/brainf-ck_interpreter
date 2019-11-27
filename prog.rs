@@ -6,6 +6,7 @@ pub struct Program {
 
 impl Program {
     pub fn is_valid(&self) -> bool {
+        println!("Checking program validity");
         let mut depth:i8 = 0;
 
         // Step through entire program once to confirm that all loops terminate.
@@ -14,6 +15,7 @@ impl Program {
                 '[' => { depth += 1; },
                 ']' => { depth -= 1;
                          if depth < 0 {
+                             println!("Bad program validity");
                              return false
                          }
                        },
@@ -21,8 +23,10 @@ impl Program {
             }
         };
         if depth > 0 {
+            println!("Bad program validity");
             false
         } else {
+            println!("Program is valid.");
             true
         }
     }
