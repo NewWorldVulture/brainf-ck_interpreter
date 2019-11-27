@@ -1,22 +1,25 @@
 pub struct State {
     pub tape: Vec<u8>,
-    pub ptr: u32,
+    pub ptr: i64,
 }
 
 impl State {
-    pub fn add(&mut self) -> std::io::Result<()> {
-        let ptr_val:u32 = self.ptr;
+    // Add one to the current cell. Should not error.
+    pub fn add(&mut self) -> Result< (), &'static str > {
+        let ptr_val = self.ptr;
         self.tape[ptr_val as usize].wrapping_add(1u8);
         Ok(())
     }
 
-    pub fn sub(&mut self) -> std::io::Result<()> {
-        let ptr_val:u32 = self.ptr;
-        self.tape[ptr_val as usize].wrapping_neg(1u8);
+    // Subtract one from the current cell. Should not error.
+    pub fn sub(&mut self) -> Result< (), &'static str > {
+        let ptr_val = self.ptr;
+        self.tape[ptr_val as usize].wrapping_add(255u8); // adding 255 == adding -1
         Ok(())
     }
 
-    pub fn rit(&mut self) -> std::io::Result<()> {
+    // Move the pointer to the right
+    pub fn rit(&mut self) -> Result< (), &'static str > {
         self.ptr += 1;
         // Check if ptr goes above highest cell
         // If so, add another cell onto the tape
@@ -26,30 +29,40 @@ impl State {
         Ok(())
     }
 
-    pub fn lft(&mut self) -> std::io::Result<()> {
+    // Move the pointer to the left
+    pub fn lft(&mut self) -> Result< (), &'static str > {
+        // Check if ptr drops below the furthest-left cell. If so, panic.
         self.ptr -= 1;
-        // Check if ptr drops below 0. If so, panic
         if self.ptr < 0 {
-            Err("Pointer head dropped below lowest cell. Adjusting.")
-        } else {
-            Ok(())
+            println!("Runtime Error: `<` Pointer moved off of tape.");
+            return Err("Runtime Error: `<` Pointer moved off of tape.")
         };
+        Ok(())
     }
-    
-    pub fn get(&mut self) -> std::io::Result<()> {
+
+    // Get one
+    // TODO! : Finish this
+    pub fn get(&mut self) -> Result< (), &'static str > {
         println!("[get() called]");
         Ok(())
     }
 
-    pub fn prt(&mut self) -> std::io::Result<()> {
+    // Print the current cell's ASCII value as a character
+    pub fn prt(&mut self) -> Result< (), &'static str > {
         print!("{}", self.tape[self.ptr as usize] as char);
         Ok(())
     }
-    
-    pub fn srt(&mut self) -> std::io::Result<()> {
+
+    // Starting a loop is defined in
+
+    // End a loop
+    pub fn end(&mut self, is_main:bool) -> Result< (), &'static str > {
         if self.tape[self.ptr as usize] == 0 {
-            
+            println!("Ending loop here.");
+            if (is_main == false) && (self.tape[self.ptr as usize] == 0) {
+                return Err("Loop");
+            }
         }
+        Ok(())
     }
 }
-

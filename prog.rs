@@ -1,36 +1,33 @@
 pub struct Program {
     pub txt: Vec<char>,
     pub ptr: u32,
+    pub inpt: String,
 }
 
 impl Program {
-    pub fn is_valid(&self) -> std::io::Result<()> {
+    pub fn is_valid(&self) -> bool {
         let mut depth:i8 = 0;
-        let mut print_out:bool = false;
-        
-        for chr in self.txt {
+
+        // Step through entire program once to confirm that all loops terminate.
+        for chr in &self.txt {
             match chr {
                 '[' => { depth += 1; },
                 ']' => { depth -= 1;
                          if depth < 0 {
-                             Err("Error: Extra `]` in program. Aborting.")
+                             return false
                          }
                        },
-                '.' => { print_out = true; },
                 _ => { },
             }
         };
         if depth > 0 {
-            Err("Error: Unterminated Loop in program. Needs matching `]`. Aborting.")
-        //} if else print_out == False {
-        //    Err("Warning: Program never prints out. Continuing.")
+            false
         } else {
-            Ok(())
+            true
         }
     }
 
-    pub fn next(&self) {
+    pub fn next(&mut self) {
         self.ptr += 1;
-        Ok(())
     }
 }
